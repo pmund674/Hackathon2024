@@ -368,3 +368,8 @@ if __name__ == "__main__":
     scheduler_thread.start()
 
     root.mainloop()
+# you need these pip installed in your terminal to  run this code
+#     pip install tk
+#     pip install tkcalendar pandas python-docx
+#     pip install pandas openpyxl python-docx
+#     pip install schedule
