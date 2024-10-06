@@ -1,0 +1,188 @@
+package application;
+import java.util.*;
+
+class Event {
+    int startHour;
+    int endHour;
+    String name;
+
+    // Constructor
+    public Event(int startHour, int endHour, String name) {
+        this.startHour = startHour;
+        this.endHour = endHour;
+        this.name = name;
+    }
+}
+
+class ScheduleBuilder {
+    // Using a Map to store the schedule
+    Map<String, List<Event>> schedule;
+
+    // Constructor
+    public ScheduleBuilder() {
+        schedule = new HashMap<>();
+    }
+
+    // Display Calendar (Manual display since Java doesn't have built-in calendar printing)
+    public void displayCalendar(int year, int month) {
+        Calendar cal = new GregorianCalendar(year, month - 1, 1); // Calendar month is 0-indexed
+        System.out.println("Sun Mon Tue Wed Thu Fri Sat");
+        for (int i = 0; i < cal.get(Calendar.DAY_OF_WEEK) - 1; i++) {
+            System.out.print("    ");
+        }
+
+        int daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+        for (int day = 1; day <= daysInMonth; day++) {
+            System.out.printf("%3d ", day);
+            if ((day + cal.get(Calendar.DAY_OF_WEEK) - 1) % 7 == 0) {
+                System.out.println();
+            }
+        }
+        System.out.println();
+    }
+
+    // Block time (schedule event)
+    public void blockTime(int year, int month, int day, int startHour, int endHour, String name) {
+        String date = year + "/" + month + "/" + day;
+        schedule.putIfAbsent(date, new ArrayList<>());
+        schedule.get(date).add(new Event(startHour, endHour, name));
+        System.out.println("Time blocked successfully!");
+    }
+
+    // View schedule
+    public void viewSchedule(int year, int month, int day) {
+        String date = year + "/" + month + "/" + day;
+        if (schedule.containsKey(date)) {
+            System.out.println("Schedule for " + month + "/" + day + "/" + year);
+            for (Event event : schedule.get(date)) {
+                System.out.println(event.startHour + ":00 - " + event.endHour + ":00: " + event.name);
+            }
+        } else {
+            System.out.println("No schedule for " + month + "/" + day + "/" + year);
+        }
+    }
+
+    // Delete event
+    public void deleteEvent(int year, int month, int day, int startHour, String name) {
+        String date = year + "/" + month + "/" + day;
+        if (schedule.containsKey(date)) {
+            Iterator<Event> iterator = schedule.get(date).iterator();
+            while (iterator.hasNext()) {
+                Event event = iterator.next();
+                if (event.startHour == startHour && event.name.equals(name)) {
+                    iterator.remove();
+                    System.out.println("Event deleted successfully!");
+                    return;
+                }
+            }
+            System.out.println("Event not found!");
+        } else {
+            System.out.println("No schedule for " + month + "/" + day + "/" + year);
+        }
+    }
+
+    // Add recurring event
+    public void addRecurringEvent(int year, int month, int day, int startHour, int endHour, String name, int frequency) {
+        for (int i = 0; i < frequency; i++) {
+            blockTime(year, month, day + i, startHour, endHour, name);
+        }
+        System.out.println("Recurring event added successfully!");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        ScheduleBuilder builder = new ScheduleBuilder();
+        Scanner sc = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("\n1. Display Calendar");
+            System.out.println("2. Block Time");
+            System.out.println("3. View Schedule");
+            System.out.println("4. Delete Event");
+            System.out.println("5. Add Recurring Event");
+            System.out.println("6. Quit");
+
+            System.out.print("Choose an option: ");
+            String choice = sc.next();
+
+            switch (choice) {
+                case "1":
+                    System.out.print("Enter year: ");
+                    int year = sc.nextInt();
+                    System.out.print("Enter month: ");
+                    int month = sc.nextInt();
+                    builder.displayCalendar(year, month);
+                    break;
+
+                case "2":
+                    System.out.print("Enter year: ");
+                    year = sc.nextInt();
+                    System.out.print("Enter month: ");
+                    month = sc.nextInt();
+                    System.out.print("Enter day: ");
+                    int day = sc.nextInt();
+                    System.out.print("Enter start hour: ");
+                    int startHour = sc.nextInt();
+                    System.out.print("Enter end hour: ");
+                    int endHour = sc.nextInt();
+                    System.out.print("Enter name: ");
+                    sc.nextLine(); // consume leftover newline
+                    String name = sc.nextLine();
+                    builder.blockTime(year, month, day, startHour, endHour, name);
+                    break;
+
+                case "3":
+                    System.out.print("Enter year: ");
+                    year = sc.nextInt();
+                    System.out.print("Enter month: ");
+                    month = sc.nextInt();
+                    System.out.print("Enter day: ");
+                    day = sc.nextInt();
+                    builder.viewSchedule(year, month, day);
+                    break;
+
+                case "4":
+                    System.out.print("Enter year: ");
+                    year = sc.nextInt();
+                    System.out.print("Enter month: ");
+                    month = sc.nextInt();
+                    System.out.print("Enter day: ");
+                    day = sc.nextInt();
+                    System.out.print("Enter start hour: ");
+                    startHour = sc.nextInt();
+                    System.out.print("Enter name: ");
+                    sc.nextLine(); // consume leftover newline
+                    name = sc.nextLine();
+                    builder.deleteEvent(year, month, day, startHour, name);
+                    break;
+
+                case "5":
+                    System.out.print("Enter year: ");
+                    year = sc.nextInt();
+                    System.out.print("Enter month: ");
+                    month = sc.nextInt();
+                    System.out.print("Enter day: ");
+                    day = sc.nextInt();
+                    System.out.print("Enter start hour: ");
+                    startHour = sc.nextInt();
+                    System.out.print("Enter end hour: ");
+                    endHour = sc.nextInt();
+                    System.out.print("Enter name: ");
+                    sc.nextLine(); // consume leftover newline
+                    name = sc.nextLine();
+                    System.out.print("Enter frequency: ");
+                    int frequency = sc.nextInt();
+                    builder.addRecurringEvent(year, month, day, startHour, endHour, name, frequency);
+                    break;
+
+                case "6":
+                    sc.close();
+                    return;
+
+                default:
+                    System.out.println("Invalid choice. Please choose again.");
+            }
+        }
+    }
+}
